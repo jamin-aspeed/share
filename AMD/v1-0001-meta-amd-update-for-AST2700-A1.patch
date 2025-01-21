@@ -1,0 +1,67 @@
+From f61581718eb463c3f47d4c2f9c50ebc91aadc1b6 Mon Sep 17 00:00:00 2001
+From: Jamin Lin <jamin_lin@aspeedtech.com>
+Date: Mon, 20 Jan 2025 18:21:44 +0800
+Subject: [PATCH v1] meta-amd: update for AST2700 A1
+
+Signed-off-by: Jamin Lin <jamin_lin@aspeedtech.com>
+---
+ meta-amd/meta-sp7/conf/machine/sp7.conf                |  9 +++++++--
+ .../meta-sp7/recipes-bsp/bootmcu/bootmcu-fw_%.bbappend | 10 ----------
+ 2 files changed, 7 insertions(+), 12 deletions(-)
+ delete mode 100644 meta-amd/meta-sp7/recipes-bsp/bootmcu/bootmcu-fw_%.bbappend
+
+diff --git a/meta-amd/meta-sp7/conf/machine/sp7.conf b/meta-amd/meta-sp7/conf/machine/sp7.conf
+index e95cedbb5e..926878c483 100644
+--- a/meta-amd/meta-sp7/conf/machine/sp7.conf
++++ b/meta-amd/meta-sp7/conf/machine/sp7.conf
+@@ -1,6 +1,7 @@
+ # Overwrite flash layout
+ FLASH_SIZE = "131072"
+-FLASH_BMCU_SIZE:flash-131072 = "768"
++FLASH_CALIPTRA_SIZE:flash-131072 = "128"
++FLASH_BMCU_SIZE:flash-131072 = "896"
+ FLASH_UBOOT_OFFSET:flash-131072 = "0"
+ FLASH_UBOOT_ENV_OFFSET:flash-131072 = "4096"
+ FLASH_KERNEL_OFFSET:flash-131072 = "4224"
+@@ -18,10 +19,13 @@ KERNEL_DEVICETREE = "aspeed/${KMACHINE}-bmc-amd-congo.dtb \
+                      aspeed/${KMACHINE}-bmc-amd-nigeria.dtb \
+                     "
+ 
++# CALIPTRA Settings
++CALIPTRA_FW_BINARY = "ast2700-caliptra-fw.bin"
++
+ # U-Boot Build Settings
+ UBOOT_MACHINE = "ast2700_sp7_defconfig"
+ UBOOT_DEVICETREE = "ast2700-sp7"
+-UBOOT_SIGN_ENABLE = "0"
++UBOOT_SIGN_ENABLE = "1"
+ UBOOT_FITIMAGE_ENABLE = "1"
+ 
+ # BootMCU Build Settings
+@@ -30,6 +34,7 @@ BOOTMCU_FW_BINARY = "ast2700-ibex-spl.bin"
+ 
+ require conf/machine/include/ast2700-sdk.inc
+ require conf/machine/include/ast-optee-os.inc
++require conf/machine/include/ast-caliptra.inc
+ require conf/machine/include/obmc-bsp-common.inc
+ require conf/machine/include/amd-withhost.inc
+ require conf/distro/include/pldm.inc
+diff --git a/meta-amd/meta-sp7/recipes-bsp/bootmcu/bootmcu-fw_%.bbappend b/meta-amd/meta-sp7/recipes-bsp/bootmcu/bootmcu-fw_%.bbappend
+deleted file mode 100644
+index 0af81bd12a..0000000000
+--- a/meta-amd/meta-sp7/recipes-bsp/bootmcu/bootmcu-fw_%.bbappend
++++ /dev/null
+@@ -1,10 +0,0 @@
+-FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
+-
+-do_deploy:append() {
+-    # prebuilt
+-    if [ -d ${S}/board/aspeed/ibex_ast2700/prebuilt ]; then
+-        if [ -n "$(ls -A ${S}/board/aspeed/ibex_ast2700/prebuilt)" ]; then
+-            install -m 644 ${S}/board/aspeed/ibex_ast2700/prebuilt/*.bin ${DEPLOYDIR}
+-        fi
+-    fi
+-}
+-- 
+2.34.1
+
